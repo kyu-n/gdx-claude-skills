@@ -1,0 +1,771 @@
+[
+  {
+    "id": "3d-03",
+    "skill": "libgdx-graphics-3d",
+    "prompt": "How do I add an orbit camera controller to my libGDX 3D scene?",
+    "must_contain": [
+      "CameraInputController"
+    ],
+    "must_not_contain": [
+      "OrbitCameraController",
+      "ArcBallCamera"
+    ],
+    "criteria": "Must use CameraInputController (the actual class name). Must call controller.update() every frame. Must set as input processor. Must NOT invent OrbitCameraController, ArcBallCamera, or similar non-existent class names.",
+    "reason": "Regression canary for 3D graphics. Tests CameraInputController (the real class). MC+MNC anchored \u2014 traps hallucinated OrbitCameraController and ArcBallCamera. Selected for its hallucination trap.",
+    "role": "canary"
+  },
+  {
+    "id": "ai-02",
+    "skill": "libgdx-gdx-ai",
+    "prompt": "Does gdx-ai include NavMesh support for pathfinding?",
+    "must_contain": [],
+    "must_not_contain": [],
+    "criteria": "Must clearly state that gdx-ai does NOT include NavMesh or NavigationMesh classes. Must suggest building your own graph implementation or using third-party libraries. Must NOT present NavMesh, NavigationMesh, or NavMeshGraph as built-in gdx-ai features.",
+    "reason": "Both arms previously failed due to self-contradictory MNC keywords (now removed). Tests whether gdx-ai skill can prevent NavMesh hallucination. Retained to revalidate after MNC patch \u2014 may become discriminating or dead.",
+    "role": "skill-resistant"
+  },
+  {
+    "id": "ai-04",
+    "skill": "libgdx-gdx-ai",
+    "prompt": "What's the difference between Sequence and Selector in gdx-ai behavior trees?",
+    "must_contain": [
+      "Sequence",
+      "Selector"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must clearly state Sequence = AND (all must succeed, fails on first failure) and Selector = OR (first success wins, fails only if all fail). Must use the words Sequence and Selector. Must NOT confuse the two or reverse their definitions.",
+    "reason": "Regression canary for gdx-ai. Tests Sequence vs Selector behavior tree semantics. MC-anchored. Selected because these are the two fundamental composite nodes and confusion between them breaks all BT logic.",
+    "role": "canary"
+  },
+  {
+    "id": "android-01",
+    "skill": "libgdx-android-backend",
+    "prompt": "I need to implement immersive fullscreen mode for my libGDX Android game. Can you show me how to set up SYSTEM_UI_FLAG_IMMERSIVE_STICKY?",
+    "must_contain": [
+      "useImmersiveMode"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must tell user that config.useImmersiveMode = true is sufficient and they should NOT write manual SYSTEM_UI_FLAG code. Mentioning SYSTEM_UI_FLAG when warning against it is acceptable. Must NOT provide a working SYSTEM_UI_FLAG code example for the user to copy.",
+    "reason": "Regression canary for Android backend. Tests useImmersiveMode configuration. MC-anchored. Selected over android-02/03/04 because immersive mode is Android-specific knowledge unlikely to be in general training data.",
+    "role": "canary"
+  },
+  {
+    "id": "asset-03",
+    "skill": "libgdx-assetmanager",
+    "prompt": "How do I safely dispose assets in libGDX when using AssetManager?",
+    "must_contain": [
+      "unload"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must recommend manager.unload(path) for releasing individual assets (reference-counted). Must NOT recommend calling .dispose() directly on textures/fonts retrieved from AssetManager \u2014 this causes double-free crashes. manager.dispose() clears everything. Mentioning .dispose() only in the context of warning AGAINST it or for manager.dispose() is acceptable.",
+    "reason": "Regression canary for AssetManager. Tests disposal semantics \u2014 manager.unload() vs direct .dispose(). MC-anchored on unload. Selected because disposal misuse is the most common AssetManager bug.",
+    "role": "canary"
+  },
+  {
+    "id": "audio-01",
+    "skill": "libgdx-audio-lifecycle",
+    "prompt": "What audio format should I use for background music in a cross-platform libGDX game that includes iOS?",
+    "must_contain": [],
+    "must_not_contain": [],
+    "criteria": "Must warn that OGG does not work on iOS. Must NOT recommend OGG/Vorbis for a cross-platform game that includes iOS. Should recommend MP3 or WAV for iOS compatibility. Must mention Music interface for long audio, not Sound.",
+    "reason": "Regression canary for audio. Tests cross-platform format selection (OGG broken on iOS). Baseline failed in batch 1 (clear_fail), proving this is near the discrimination edge. A model regression here is plausible.",
+    "role": "canary"
+  },
+  {
+    "id": "box2d-03",
+    "skill": "libgdx-box2d",
+    "prompt": "How should I step the Box2D world in my libGDX render loop?",
+    "must_contain": [
+      "world.step"
+    ],
+    "must_not_contain": [
+      "getDeltaTime()"
+    ],
+    "criteria": "Must use a fixed timestep like 1/60f, NOT Gdx.graphics.getDeltaTime() directly as the step size. Variable timestep causes tunneling and non-deterministic behavior. Should show world.step(timeStep, velocityIterations, positionIterations) with all three parameters. Mentioning getDeltaTime() in the context of an accumulator pattern is acceptable, but it must NOT be passed directly as the first argument to world.step().",
+    "reason": "Baseline passes getDeltaTime() directly to world.step() (0/3 pass). Skill corrects to fixed timestep accumulator pattern. MC+MNC anchored \u2014 traps passing getDeltaTime() directly to world.step().",
+    "role": "discriminating"
+  },
+  {
+    "id": "bullet-01",
+    "skill": "libgdx-bullet-physics",
+    "prompt": "Write the setup code for a Bullet physics world in libGDX.",
+    "must_contain": [
+      "Bullet.init"
+    ],
+    "must_not_contain": [],
+    "criteria": "MUST call Bullet.init() before instantiating any bt* classes \u2014 omitting this causes a segfault. btDiscreteDynamicsWorld constructor order must be: (dispatcher, broadphase, solver, collisionConfiguration). Must NOT reverse or omit parameters.",
+    "reason": "Regression canary for Bullet physics. Tests Bullet.init() call requirement. MC-anchored. Selected because missing init() is a silent failure that causes hard-to-debug crashes.",
+    "role": "canary"
+  },
+  {
+    "id": "cam-02",
+    "skill": "libgdx-camera-viewport",
+    "prompt": "What's the difference between FitViewport, FillViewport, and ScreenViewport in libGDX? Which should I use for a pixel-art game?",
+    "must_contain": [
+      "FitViewport",
+      "FillViewport",
+      "ScreenViewport"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must explain: FitViewport maintains aspect ratio with letterboxing, FillViewport maintains aspect ratio by cropping, ScreenViewport maps 1:1 to screen pixels (no virtual resolution). For pixel-art, should recommend either ScreenViewport or FitViewport with integer scaling. Must mention calling viewport.update(width, height) in resize().",
+    "reason": "Regression canary for camera/viewport. Tests FitViewport vs FillViewport vs ScreenViewport differences. MC-anchored with 3 keywords. Selected for breadth of coverage in a single test.",
+    "role": "canary"
+  },
+  {
+    "id": "controllers-01",
+    "skill": "libgdx-controllers",
+    "prompt": "Write a libGDX controller input handler that reads the A button and left stick.",
+    "must_contain": [
+      "getMapping"
+    ],
+    "must_not_contain": [
+      "getButton(0)",
+      "getAxis(0)",
+      "getAxis(1)",
+      "PovDirection"
+    ],
+    "criteria": "Must use controller.getMapping().buttonA and .axisLeftX. Must NOT hardcode button/axis numbers. Must NOT use 1.x API (PovDirection, etc).",
+    "reason": "Regression canary for controllers. Tests Controllers 2.x API (getMapping). MC+MNC anchored \u2014 traps v1 API calls (getButton(0), getAxis(0), PovDirection). Selected for its version-migration trap.",
+    "role": "canary"
+  },
+  {
+    "id": "cross-01",
+    "skill": "multiple",
+    "prompt": "I'm building a libGDX game that needs to save game state. Where should I save it on Android and desktop?",
+    "must_contain": [
+      "Gdx.files.local"
+    ],
+    "must_not_contain": [
+      "System.getProperty",
+      "user.home"
+    ],
+    "criteria": "Must recommend Gdx.files.local() for save data (works cross-platform). Must NOT suggest desktop-style paths like System.getProperty(\"user.home\") which don't work on Android.",
+    "reason": "Regression canary for cross-platform concerns. Tests Gdx.files.local() for save data. MC+MNC anchored \u2014 traps System.getProperty/user.home (Java stdlib). Selected for its platform-abstraction hallucination trap.",
+    "role": "canary"
+  },
+  {
+    "id": "fbo-01",
+    "skill": "libgdx-framebuffer-pixmap",
+    "prompt": "Write code to render a scene to a FrameBuffer texture in libGDX, then draw that texture to the screen.",
+    "must_contain": [
+      "begin",
+      "end"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must call fbo.begin() before drawing and fbo.end() after. Must clear the FBO after begin() \u2014 content persists from previous frame. The FBO texture is vertically flipped \u2014 must flip it when drawing (via TextureRegion.flip or v-coordinate swap). Must end any active SpriteBatch before fbo.begin()/end().",
+    "reason": "Regression canary for framebuffers. Tests FrameBuffer begin()/end() pattern. MC-anchored. Selected over fbo-03 as the fundamental FBO usage pattern.",
+    "role": "canary"
+  },
+  {
+    "id": "fbo-02",
+    "skill": "libgdx-framebuffer-pixmap",
+    "prompt": "How do I take a screenshot in libGDX and save it to a file?",
+    "must_contain": [
+      "PixmapIO"
+    ],
+    "must_not_contain": [
+      "BufferedImage",
+      "ImageIO"
+    ],
+    "criteria": "Must capture the framebuffer using either Pixmap.createFromFrameBuffer() or ScreenUtils.getFrameBufferPixmap() — both are valid libGDX APIs. Must handle Y-flip when saving (via PixmapIO.writePNG flipY parameter, TextureRegion.flip, or manual Pixmap manipulation). Must call pixmap.dispose() to free native memory. Must use PixmapIO for saving (writePNG or PNG writer). Must NOT use Java2D (BufferedImage, ImageIO) which is not available on all libGDX backends.",
+    "reason": "Tests screenshot capture with proper Y-flip handling, PixmapIO save, and Pixmap disposal. MC-anchored on PixmapIO. MNC traps Java2D approaches (BufferedImage/ImageIO) which are not cross-platform. Both createFromFrameBuffer() and ScreenUtils.getFrameBufferPixmap() are valid APIs.",
+    "role": "canary"
+  },
+  {
+    "id": "fileio-02",
+    "skill": "libgdx-file-io-preferences",
+    "prompt": "How do I save and load player preferences like volume and difficulty settings in libGDX?",
+    "must_contain": [
+      "flush"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must use Gdx.app.getPreferences(name). Must call preferences.flush() to persist changes \u2014 without it, changes may be lost. Must NOT assume changes auto-save. Should use putFloat/getFloat, putString/getString etc.",
+    "reason": "Regression canary for file I/O. Tests Preferences.flush() requirement. MC-anchored. Selected because missing flush() is a silent data-loss bug that works in testing but fails in production.",
+    "role": "canary"
+  },
+  {
+    "id": "font-01",
+    "skill": "libgdx-bitmap-font-text",
+    "prompt": "How do I measure the width and height of a text string in libGDX before drawing it?",
+    "must_contain": [
+      "GlyphLayout"
+    ],
+    "must_not_contain": [
+      "getBounds"
+    ],
+    "criteria": "Must use GlyphLayout to measure text. Must access width and height as PUBLIC FIELDS (layout.width, layout.height), NOT methods. Must NOT use font.getBounds() which was removed in libGDX 1.5.6. Must NOT invent getWidth()/getHeight() methods on GlyphLayout.",
+    "reason": "Regression canary for bitmap fonts. Tests GlyphLayout for text measurement. MC+MNC anchored \u2014 traps hallucinated getBounds() method. Selected for its hallucination trap over font-02/03/04.",
+    "role": "canary"
+  },
+  {
+    "id": "freetype-04",
+    "skill": "libgdx-freetype",
+    "prompt": "Do I need to reload my FreeType-generated fonts when my Android app resumes from background?",
+    "must_contain": [
+      "managed"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must state that generated BitmapFonts are managed textures that auto-reload after GL context loss. Must NOT suggest re-running the generator or creating new FreeTypeFontGenerator objects in resume(). Mentioning these as anti-patterns (what NOT to do) is acceptable.",
+    "reason": "Regression canary for FreeType. Tests that FreeType fonts are managed textures (auto-reload). MC-anchored on \"managed\". Selected because GL context loss handling is the most error-prone FreeType topic.",
+    "role": "canary"
+  },
+  {
+    "id": "headless-01",
+    "skill": "libgdx-headless-backend",
+    "prompt": "Write a libGDX headless server that runs at 20 ticks per second.",
+    "must_contain": [
+      "updatesPerSecond"
+    ],
+    "must_not_contain": [
+      "renderInterval",
+      "tickRate",
+      "setFPS"
+    ],
+    "criteria": "Must use config.updatesPerSecond = 20. Must NOT use the old renderInterval field, or invented fields like tickRate or setFPS.",
+    "reason": "Regression canary for headless backend. Tests updatesPerSecond configuration. MC+MNC anchored \u2014 traps old renderInterval and hallucinated tickRate/setFPS. Selected for its hallucination trap over headless-03.",
+    "role": "canary"
+  },
+  {
+    "id": "headless-02",
+    "skill": "libgdx-headless-backend",
+    "prompt": "Can I use BitmapFont and Skin in a libGDX headless server for text processing?",
+    "must_contain": [],
+    "must_not_contain": [
+      "new BitmapFont(",
+      "new Skin("
+    ],
+    "criteria": "Must clearly state that BitmapFont and Skin require OpenGL and will crash in headless mode because Gdx.gl is null. Must NOT present working BitmapFont or Skin construction code as though it will work in headless. Should suggest alternatives like Json for data processing.",
+    "reason": "Inverted result: baseline passes (3/3) but skills arm has noise (2/3). Skills may introduce confusing context about BitmapFont/Skin in headless mode. Monitors for skill-induced regressions where extra context hurts.",
+    "role": "anomaly"
+  },
+  {
+    "id": "input-03",
+    "skill": "libgdx-input-handling",
+    "prompt": "How do I handle swipe gestures in libGDX?",
+    "must_contain": [
+      "GestureDetector"
+    ],
+    "must_not_contain": [
+      "SwipeListener",
+      "SwipeDetector",
+      "GestureListener.onSwipe"
+    ],
+    "criteria": "Must recommend GestureDetector with fling() for swipes. Must NOT present onSwipe(), onSwipeLeft(), onSwipeRight() etc. as libGDX API methods to override \u2014 these do not exist in GestureListener. User-defined helper methods with these names called FROM fling() are acceptable. Must mention GestureDetector is an InputProcessor.",
+    "reason": "Regression canary for input handling. Tests GestureDetector for swipe detection. MC+MNC anchored \u2014 traps hallucinated SwipeListener/SwipeDetector/onSwipe. Best hallucination trap in the input category.",
+    "role": "canary"
+  },
+  {
+    "id": "ios-01",
+    "skill": "libgdx-ios-robovm",
+    "prompt": "I'm setting up a new libGDX iOS project. What backend dependency should I use?",
+    "must_contain": [
+      "metalangle",
+      "MetalANGLE"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must recommend gdx-backend-robovm-metalangle for new projects. Must mention Apple deprecated OpenGL ES.",
+    "reason": "Baseline recommends deprecated gdx-backend-robovm (0/3 pass). Skill corrects to MetalANGLE backend. Tests whether training data stale on Apple OpenGL ES deprecation. Strongest signal for iOS skill value.",
+    "role": "discriminating"
+  },
+  {
+    "id": "ios-02",
+    "skill": "libgdx-ios-robovm",
+    "prompt": "My libGDX game works fine on desktop and Android but I get ClassNotFoundException on iOS. The class is only used via libGDX Json deserialization.",
+    "must_contain": [
+      "forceLinkClasses",
+      "robovm.xml"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must identify RoboVM AOT stripping as the cause. Must recommend adding forceLinkClasses patterns in robovm.xml.",
+    "reason": "Regression canary for iOS/RoboVM. Tests forceLinkClasses and robovm.xml configuration. MC-anchored. Selected because missing force-link causes runtime ClassNotFoundException unique to RoboVM.",
+    "role": "canary"
+  },
+  {
+    "id": "json-01",
+    "skill": "libgdx-collections-json",
+    "prompt": "How do I serialize a Java object to a JSON string and back in libGDX?",
+    "must_contain": [
+      "com.badlogic.gdx.utils.Json"
+    ],
+    "must_not_contain": [
+      "ObjectMapper",
+      "Gson",
+      "Jackson"
+    ],
+    "criteria": "Must use com.badlogic.gdx.utils.Json class. toJson(object) for serialization, fromJson(Class, String) for deserialization. Must NOT use Jackson ObjectMapper or Google Gson \u2014 these aren't cross-platform (GWT).",
+    "reason": "Regression canary for collections/JSON. Tests com.badlogic.gdx.utils.Json usage. MC+MNC anchored \u2014 traps Jackson/Gson/ObjectMapper recommendations. Selected for its external-library hallucination trap.",
+    "role": "canary"
+  },
+  {
+    "id": "json-02",
+    "skill": "libgdx-collections-json",
+    "prompt": "I'm switching from java.util.ArrayList to libGDX Array. What gotchas should I watch out for?",
+    "must_contain": [
+      "size",
+      "identity"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must convey that Array.size is a PUBLIC FIELD (not a method) — either by explicit statement OR by using .size without parentheses in code examples. Must warn that the backing items[] array contains nulls or stale references beyond size (do not iterate items.length). Must mention the identity boolean parameter required on contains/indexOf/removeValue. Should mention removeValue (not remove) for object removal.",
+    "reason": "Gotchas prompt naturally elicits Array internals: .size as field, stale items beyond size, identity parameter. Baseline misses stale-references warning; skill covers it.",
+    "role": "discriminating"
+  },
+  {
+    "id": "lifecycle-02",
+    "skill": "libgdx-application-lifecycle",
+    "prompt": "How do I get the frame delta time in libGDX?",
+    "must_contain": [
+      "Gdx.graphics.getDeltaTime"
+    ],
+    "must_not_contain": [
+      "Gdx.app.getDeltaTime"
+    ],
+    "criteria": "Must use Gdx.graphics.getDeltaTime(), NOT Gdx.app.getDeltaTime() which doesn't exist.",
+    "reason": "Regression canary for application lifecycle. Tests Gdx.graphics.getDeltaTime() usage. MC+MNC anchored (traps hallucinated Gdx.app.getDeltaTime). Selected for its hallucination trap over lifecycle-01/03.",
+    "role": "canary"
+  },
+  {
+    "id": "lights-01",
+    "skill": "libgdx-box2dlights",
+    "prompt": "I'm trying to enable gamma correction in box2dlights by calling RayHandler.setGammaCorrection(true) but it has no effect. What's wrong?",
+    "must_contain": [
+      "RayHandlerOptions"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must explain that RayHandler.setGammaCorrection(boolean) is a deprecated STATIC method with an EMPTY BODY \u2014 it literally does nothing. Must recommend using RayHandlerOptions at construction or the instance method applyGammaCorrection(boolean) after construction. Must NOT present the static method as functional.",
+    "reason": "Baseline inconsistently knows that RayHandler.setGammaCorrection() is deprecated with an empty body (3/5 pass). Skill makes it consistent (5/5). Tests knowledge of box2dlights deprecation details.",
+    "role": "discriminating"
+  },
+  {
+    "id": "lights-02",
+    "skill": "libgdx-box2dlights",
+    "prompt": "Show me how to render box2dlights with a SpriteBatch in my libGDX game.",
+    "must_contain": [
+      "updateAndRender"
+    ],
+    "must_not_contain": [],
+    "criteria": "Lights must be rendered AFTER batch.end(), NOT inside batch.begin()/end(). Must call rayHandler.setCombinedMatrix(camera) and rayHandler.updateAndRender(). Must NOT use rayHandler.render() alone \u2014 updateAndRender() is the correct method.",
+    "reason": "Regression canary for box2dlights. Tests RayHandler.updateAndRender() integration with SpriteBatch. MC-anchored. Selected over lights-03 because render ordering is the primary box2dlights integration point.",
+    "role": "canary"
+  },
+  {
+    "id": "lwjgl3-01",
+    "skill": "libgdx-lwjgl3-desktop",
+    "prompt": "Write a basic libGDX desktop launcher class for my game.",
+    "must_contain": [
+      "Lwjgl3Application",
+      "Lwjgl3ApplicationConfiguration"
+    ],
+    "must_not_contain": [
+      "LwjglApplication",
+      "LwjglApplicationConfiguration"
+    ],
+    "criteria": "Must use LWJGL3 classes (Lwjgl3Application, Lwjgl3ApplicationConfiguration), NOT legacy LWJGL2 classes (LwjglApplication, LwjglApplicationConfiguration).",
+    "reason": "Regression canary for LWJGL3 desktop. Tests Lwjgl3Application/Lwjgl3ApplicationConfiguration. MC+MNC anchored \u2014 traps old LWJGL2 class names (LwjglApplication). Selected for its version-migration trap.",
+    "role": "canary"
+  },
+  {
+    "id": "lwjgl3-03",
+    "skill": "libgdx-lwjgl3-desktop",
+    "prompt": "How can I detect when the user Alt+Tabs away from my libGDX game window?",
+    "must_contain": [
+      "Lwjgl3WindowListener",
+      "focusLost"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must recommend Lwjgl3WindowListener/Lwjgl3WindowAdapter with focusLost()/focusGained() callbacks. Must clearly state that pause() does NOT fire on Alt+Tab/focus loss (only on minimize). Must NOT suggest using raw GLFW calls like glfwSetWindowFocusCallback() as the primary solution.",
+    "reason": "Baseline incorrectly claims pause() fires on Alt+Tab/focus loss (1/3 pass). Skill corrects to Lwjgl3WindowListener.focusLost(). Tests a subtle LWJGL3-specific behavior where the intuitive answer is wrong.",
+    "role": "discriminating"
+  },
+  {
+    "id": "math-03",
+    "skill": "libgdx-math",
+    "prompt": "Show me how to use easing/interpolation in libGDX. I want a quadratic ease-in.",
+    "must_contain": [
+      "pow2"
+    ],
+    "must_not_contain": [
+      "quadIn",
+      "easeIn",
+      "easeInOut"
+    ],
+    "criteria": "Must use Interpolation.pow2In for quadratic ease-in (NOT Interpolation.quadIn, easeIn, or easeInOut \u2014 none of these exist). The naming convention uses pow2, pow3, pow4, pow5 \u2014 NOT quad, cubic, quart, quint.",
+    "reason": "Regression canary for math utilities. Tests Interpolation.pow2 for easing. MC+MNC anchored \u2014 traps hallucinated quadIn/easeIn/easeInOut method names. Selected for its hallucination trap.",
+    "role": "canary"
+  },
+  {
+    "id": "math-04",
+    "skill": "libgdx-math",
+    "prompt": "How do I generate a random integer between 5 and 10 inclusive in libGDX?",
+    "must_contain": [
+      "MathUtils.random"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must use MathUtils.random(5, 10). Must state that for integers, BOTH bounds are INCLUSIVE (returns 5, 6, 7, 8, 9, or 10). Should note that the float overload random(float, float) is EXCLUSIVE on the upper bound \u2014 different behavior.",
+    "reason": "Baseline never mentions that MathUtils.random(float,float) has exclusive upper bound while random(int,int) is inclusive (0/5 pass). Skill provides the distinction. Tests subtle API contract differences within the same class.",
+    "role": "discriminating"
+  },
+  {
+    "id": "net-01",
+    "skill": "libgdx-networking",
+    "prompt": "Write code to make an HTTP GET request in libGDX and display the response.",
+    "must_contain": [
+      "postRunnable"
+    ],
+    "must_not_contain": [
+      "getResultAsBytes",
+      "HttpURLConnection"
+    ],
+    "criteria": "Must use Gdx.net.sendHttpRequest() with an async HttpResponseListener. The response callback is NOT on the GL thread \u2014 must use Gdx.app.postRunnable() to touch UI/GL state. The byte[] method is getResult(), NOT getResultAsBytes(). Must NOT use java.net.HttpURLConnection directly.",
+    "reason": "Regression canary for networking. Tests Gdx.net.sendHttpRequest() with postRunnable for thread safety. MC+MNC anchored \u2014 traps getResultAsBytes (hallucinated) and HttpURLConnection (wrong library). Dual trap.",
+    "role": "canary"
+  },
+  {
+    "id": "net-03",
+    "skill": "libgdx-networking",
+    "prompt": "I'm using Pixmap.downloadFromUrl() in libGDX. Do I need to wrap the Texture creation in postRunnable inside downloadComplete?",
+    "must_contain": [
+      "GL thread"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must state that downloadComplete() already runs on the GL thread \u2014 the implementation internally uses postRunnable. Wrapping in another postRunnable is redundant but harmless. However, downloadFailed() runs on a BACKGROUND thread and DOES need postRunnable for GL operations. Must NOT claim downloadComplete runs on a background thread.",
+    "reason": "Baseline universally claims downloadComplete() runs on a background thread (0/5 pass). Skill corrects: it already runs on the GL thread via internal postRunnable. Tests confidently-wrong threading assumptions in libGDX networking.",
+    "role": "discriminating"
+  },
+  {
+    "id": "part-01",
+    "skill": "libgdx-particles",
+    "prompt": "Write code to load, update, and draw a 2D particle effect in libGDX.",
+    "must_contain": [
+      "start"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must call effect.start() to begin emission. Must call effect.update(delta) then effect.draw(batch) each frame, inside batch.begin()/end(). Must load via effect.load(). Must dispose the effect. Must NOT confuse with the 3D particle API (different package, different file format).",
+    "reason": "Regression canary for particles. Tests ParticleEffect load/update/draw lifecycle. MC-anchored on start(). Selected as the fundamental particle usage pattern over part-02 (scaleEffect bug) and part-03 (pooling).",
+    "role": "canary"
+  },
+  {
+    "id": "render-01",
+    "skill": "libgdx-2d-rendering",
+    "prompt": "Write a libGDX render method that draws sprites and then draws debug shapes on top.",
+    "must_contain": [
+      "batch.end",
+      "ShapeRenderer"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must NOT nest SpriteBatch.begin/end inside ShapeRenderer.begin/end or vice versa. Must end batch before beginning ShapeRenderer (batch.end() then shapeRenderer.begin()). Should call batch.setProjectionMatrix(camera.combined) BEFORE begin().",
+    "reason": "Regression canary for 2D rendering. Tests SpriteBatch/ShapeRenderer ordering (must end batch before shapes). MC-anchored on batch.end and ShapeRenderer. Covers the most common libGDX rendering mistake.",
+    "role": "canary"
+  },
+  {
+    "id": "render-03",
+    "skill": "libgdx-2d-rendering",
+    "prompt": "How do I clear the screen in libGDX before drawing?",
+    "must_contain": [
+      "ScreenUtils.clear"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must recommend ScreenUtils.clear() (since 1.10.0), not the old Gdx.gl.glClearColor()+glClear() pattern.",
+    "reason": "Baseline hedges by presenting legacy glClearColor()+glClear() alongside ScreenUtils.clear() (0/3 pass). Skill anchors on the modern API. Tests whether model recommends deprecated patterns as valid alternatives.",
+    "role": "discriminating"
+  },
+  {
+    "id": "scene2d-03",
+    "skill": "libgdx-scene2d-ui",
+    "prompt": "Write a ChangeListener for a libGDX TextButton.",
+    "must_contain": [
+      "changed",
+      "ChangeEvent"
+    ],
+    "must_not_contain": [
+      "actionPerformed",
+      "ActionEvent",
+      "ActionListener"
+    ],
+    "criteria": "Must use correct signature: changed(ChangeEvent event, Actor actor). Must NOT use Java Swing patterns like actionPerformed(ActionEvent).",
+    "reason": "Regression canary for Scene2D. Tests ChangeListener/ChangeEvent pattern. MC+MNC anchored \u2014 traps Java Swing names (actionPerformed/ActionEvent/ActionListener). Selected for its cross-framework hallucination trap.",
+    "role": "canary"
+  },
+  {
+    "id": "shader-02",
+    "skill": "libgdx-shaders",
+    "prompt": "My libGDX ShaderProgram throws an exception about a missing uniform, but I don't use that uniform in my shader code. How do I fix this?",
+    "must_contain": [
+      "pedantic"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must explain that ShaderProgram.pedantic defaults to TRUE, which throws IllegalArgumentException when setting a uniform that doesn't exist (or was optimized out by the driver). Must recommend either setting ShaderProgram.pedantic = false globally, or ensuring the uniform exists. Must NOT claim pedantic defaults to false.",
+    "reason": "Regression canary for shaders. Tests ShaderProgram.pedantic flag. MC-anchored. Selected because pedantic=true default causes the most common shader debugging confusion. Had 1 baseline failure in batch 2 (4/5), closest to discrimination edge.",
+    "role": "canary"
+  },
+  {
+    "id": "tiled-02",
+    "skill": "libgdx-tiled",
+    "prompt": "How do I get the tile at a specific pixel position in a TiledMapTileLayer?",
+    "must_contain": [
+      "getCell"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must convert pixel coordinates to tile coordinates by dividing by tile width/height. getCell(x, y) takes TILE coordinates (int), not pixel coordinates. Must handle null return \u2014 getCell returns null for empty cells and out-of-bounds positions, does NOT throw. Must NOT pass raw pixel values to getCell.",
+    "reason": "Regression canary for Tiled maps. Tests TiledMapTileLayer.getCell() for tile access. MC-anchored. Selected over tiled-01 (basic loading) and tiled-03 (layer access) as the most specific API knowledge test.",
+    "role": "canary"
+  },
+    {
+    "id": "tween-01",
+    "skill": "universal-tween-engine",
+    "prompt": "I want to tween an object's RGBA color (4 float values) using Universal Tween Engine. Write the accessor and the tween code.",
+    "must_contain": [
+      "setCombinedAttributesLimit"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must call Tween.setCombinedAttributesLimit(4) (or higher) BEFORE tweening 4 values. Default limit is 3, so tweening RGBA (4 floats) without raising it throws at runtime. The accessor's getValues() must return 4 and setValues() must read 4. Must NOT omit the limit increase or claim the default handles 4 values.",
+    "reason": "Baseline omits setCombinedAttributesLimit entirely when tweening 4+ values (0/3 pass). Skill documents the default=3 limit and the runtime throw. Tests the most common 'works in 3D but breaks on RGBA' scenario.",
+    "role": "discriminating"
+  },
+  {
+    "id": "tween-02",
+    "skill": "universal-tween-engine",
+    "prompt": "How do I animate an object along a curved path using waypoints in Universal Tween Engine?",
+    "must_contain": [
+      "setWaypointsLimit"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must call Tween.setWaypointsLimit(n) at startup BEFORE any .waypoint() call. Default waypoints limit is 0, so ANY .waypoint() call throws without raising it first. Should mention .path(TweenPaths.catmullRom) or .path(TweenPaths.linear) for path interpolation. Must NOT omit the limit configuration.",
+    "reason": "Baseline never mentions setWaypointsLimit (0/3 pass). Default limit of 0 means waypoints are disabled out of the box — a trap that's not obvious from the API. Skill documents this clearly.",
+    "role": "discriminating"
+  },
+  {
+    "id": "tween-03",
+    "skill": "universal-tween-engine",
+    "prompt": "I'm using Tween.to(obj, X, 1f).targetRelative(100).delay(2f).start(manager). When exactly is the relative offset resolved — at the factory call, at start(), or at some other time?",
+    "must_contain": [
+      "initialization"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must state that targetRelative() offset is resolved at INITIALIZATION TIME — after the delay completes, NOT at factory-call time and NOT at start() time. The engine computes finalTarget = startValue + relativeOffset when the initial delay ends. If the object moves during the delay (e.g., another tween moves it), the final target reflects position at initialization, not at creation. Must NOT say offset resolves when the factory is called or when start() is called.",
+    "reason": "Baseline incorrectly claims offset resolves at start() time (0/3 pass). The distinction matters when delays are involved — an object that moves during the delay period gets a different final target. Skill explicitly documents initialization-time resolution.",
+    "role": "discriminating"
+  },
+  {
+    "id": "tween-04",
+    "skill": "universal-tween-engine",
+    "prompt": "What time units does Universal Tween Engine use? Are the duration values in Tween.to() specified in seconds or milliseconds?",
+    "must_contain": [],
+    "must_not_contain": [],
+    "criteria": "Must state that duration is UNITLESS — it uses whatever unit you pass to manager.update(delta). If you pass seconds (e.g., Gdx.graphics.getDeltaTime()), durations are in seconds. If you pass milliseconds, they're in milliseconds. The javadoc misleadingly says 'milliseconds' but this is wrong. Must NOT categorically state durations are always seconds or always milliseconds.",
+    "reason": "Baseline confidently states durations are in seconds (0/3 pass). The javadoc misleadingly says 'milliseconds'. Neither is correct — the units are determined by what you pass to update(). Skill explicitly documents this trap.",
+    "role": "discriminating"
+  },
+  {
+    "id": "tween-05",
+    "skill": "universal-tween-engine",
+    "prompt": "How do I make a tween yoyo back and forth 3 times in Universal Tween Engine? Also, can I play tweens backward by passing a negative delta to update()?",
+    "must_contain": [
+      "repeatYoyo"
+    ],
+    "must_not_contain": [
+      "repeatYoyo(true)",
+      "setYoyo("
+    ],
+    "criteria": "Must use .repeatYoyo(int count, float delay) — e.g., repeatYoyo(3, 0f). Must NOT use repeatYoyo(true) (no boolean overload exists) or setYoyo(boolean) (doesn't exist). Must warn against negative delta — backward play via negative delta is unreliable and a source of bugs. Always clamp delta >= 0.",
+    "reason": "Baseline uses nonexistent repeatYoyo(true) boolean API (0/3 pass) and does not warn about negative delta. Skill documents the correct (int, float) signature and explicitly warns against negative delta.",
+    "role": "discriminating"
+  },
+  {
+    "id": "tween-06",
+    "skill": "universal-tween-engine",
+    "prompt": "Write code to smoothly move a sprite from its current position to (200, 300) over 1 second using Universal Tween Engine.",
+    "must_contain": [
+      "Tween.to"
+    ],
+    "must_not_contain": [
+      "new Tween("
+    ],
+    "criteria": "Must use Tween.to() static factory method. Must NOT use new Tween() — constructors are private. Must call .target() with destination values. Must show .start(manager) for managed tween or explain manual update. Should include registerAccessor() or note that the target implements TweenAccessor.",
+    "reason": "Regression canary for Universal Tween Engine. Tests factory-only construction pattern (Tween.to). MC+MNC anchored — traps new Tween() constructor usage. Selected as the fundamental API entry point.",
+    "role": "canary"
+  },
+  {
+    "id": "tween-07",
+    "skill": "universal-tween-engine",
+    "prompt": "How do I write a TweenAccessor for a custom class in Universal Tween Engine? My class has x, y, and alpha fields.",
+    "must_contain": [
+      "getValues",
+      "setValues",
+      "registerAccessor"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must implement TweenAccessor<T> with both getValues() and setValues(). getValues() MUST return the count of float values written into returnValues[] — this is critical, returning 0 or wrong count silently breaks interpolation. Must call Tween.registerAccessor() at startup OR have the target class self-implement TweenAccessor. Must define tweenType constants (e.g., POSITION_XY = 0, ALPHA = 1).",
+    "reason": "Regression canary for Universal Tween Engine. Tests TweenAccessor implementation pattern. MC-anchored on getValues/setValues/registerAccessor. Selected because accessor mistakes (wrong return count, missing registration) are the most common setup errors.",
+    "role": "canary"
+  },
+  {
+    "id": "tween-08",
+    "skill": "universal-tween-engine",
+    "prompt": "Explain the difference between Tween.to() and Tween.from() in Universal Tween Engine. If my sprite is at x=100, what does Tween.from(sprite, X, 1f).target(0) do?",
+    "must_contain": [],
+    "must_not_contain": [],
+    "criteria": "Must clearly state that Tween.from() reverses the direction: the .target() values become the START position, and the object's current values at initialization become the END. So Tween.from(sprite, X, 1f).target(0) animates FROM x=0 TO x=100 (current position). Must NOT say from() goes from current to target in reverse order.",
+    "reason": "Regression canary for Universal Tween Engine. Tests Tween.from() reversal semantics — one of the most confusing aspects of the API. The .target() values counterintuitively become the starting point.",
+    "role": "canary"
+  },
+  {
+    "id": "tween-09",
+    "skill": "universal-tween-engine",
+    "prompt": "How do I set up a callback to fire when a tween starts AND when it completes in Universal Tween Engine?",
+    "must_contain": [
+      "setCallback",
+      "setCallbackTriggers"
+    ],
+    "must_not_contain": [
+      "addListener",
+      "TweenListener"
+    ],
+    "criteria": "Must use .setCallback() with a TweenCallback (or lambda). Must use .setCallbackTriggers() with a bitmask combining flags (e.g., TweenCallback.BEGIN | TweenCallback.COMPLETE). Default trigger is COMPLETE only, so START/BEGIN won't fire without setCallbackTriggers. The callback's type parameter is a SINGLE flag, not a combined mask. Must NOT use addListener() or TweenListener (don't exist).",
+    "reason": "Regression canary for Universal Tween Engine. Tests callback system with bitmask triggers. MC+MNC anchored — traps hallucinated addListener/TweenListener API. Selected because the bitmask trigger system is non-obvious.",
+    "role": "canary"
+  },
+  {
+    "id": "tween-10",
+    "skill": "universal-tween-engine",
+    "prompt": "Write a Timeline that fades in an object while scaling it up, waits 1 second, then moves it to the right, using Universal Tween Engine.",
+    "must_contain": [
+      "createSequence",
+      "beginParallel",
+      "end"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must use Timeline.createSequence() with a nested beginParallel()/end() block for the simultaneous fade+scale. Must use pushPause() or Tween.mark() for the delay between groups. Every beginParallel()/beginSequence() MUST be balanced with .end(). Must NOT use new Timeline() — constructors are private.",
+    "reason": "Regression canary for Universal Tween Engine. Tests Timeline composition with nested parallel/sequence. MC-anchored on createSequence/beginParallel/end. Selected because unbalanced begin/end is the most common Timeline mistake.",
+    "role": "canary"
+  },
+  {
+    "id": "tween-11",
+    "skill": "universal-tween-engine",
+    "prompt": "Is the default easing in Universal Tween Engine linear? If not, what is it and how do I get linear interpolation?",
+    "must_contain": [
+      "Quad.INOUT"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must state default easing is Quad.INOUT, NOT linear. For linear interpolation, must explicitly set .ease(Linear.INOUT). Must NOT claim the default is linear or that no easing is applied by default.",
+    "reason": "Canary for Universal Tween Engine. Tests knowledge that default easing is Quad.INOUT. MC-anchored. Most developers assume linear default, but the engine applies quadratic ease-in-out by default.",
+    "role": "canary"
+  },
+  {
+    "id": "tween-12",
+    "skill": "universal-tween-engine",
+    "prompt": "I want to use Back.IN with a custom overshoot value for one tween, and Back.IN with the default overshoot for another tween. How do I do this safely in Universal Tween Engine?",
+    "must_contain": [],
+    "must_not_contain": [],
+    "criteria": "Must warn that Back.IN.s(float) MUTATES the static singleton instance — calling s(2.5f) changes the overshoot for ALL future tweens using Back.IN, not just the current one. Same applies to Elastic.IN.a()/p(). This is NOT thread-safe and persists for the application lifetime. Must NOT present Back.IN.s() as scoped to a single tween.",
+    "reason": "Tests knowledge of the static singleton mutation trap in parameterizable equations. Back.s() and Elastic.a()/p() modify shared static instances, which surprises developers who expect per-tween configuration.",
+    "role": "canary"
+  },
+  {
+    "id": "bullet-02",
+    "skill": "libgdx-bullet-physics",
+    "prompt": "I'm disposing my Bullet physics world in libGDX but getting crashes. Here's my disposal order: first I dispose the world, then the bodies, then shapes, then broadphase, dispatcher, solver, and collisionConfig. What's wrong?",
+    "must_contain": [
+      "reverse"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must explain that disposal order must be the REVERSE of creation order: first remove all bodies from the world, then dispose bodies/motionStates/constructionInfos, then shapes, then world, then solver, then broadphase, then dispatcher, then collisionConfig. Disposing the world while bodies are still in it causes crashes. Must specifically state that the world must be disposed AFTER bodies are removed, not before.",
+    "reason": "Haiku passes baseline (3/3). Kept as canary — tests disposal ordering knowledge distinct from bullet-01 (world setup).",
+    "role": "canary"
+  },
+  {
+    "id": "camera-01",
+    "skill": "libgdx-camera-viewport",
+    "prompt": "I'm trying to move my OrthographicCamera in libGDX but camera.setPosition(x, y, 0) gives me a compilation error. What's the correct way to set the camera position?",
+    "must_contain": [
+      "camera.position.set"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must clearly state that there is NO setPosition() method on Camera. The position is a public Vector3 field that must be modified directly via camera.position.set(x, y, 0). Must NOT present camera.setPosition() as valid code.",
+    "reason": "Haiku passes baseline (3/3). Kept as canary — tests camera.position.set trap distinct from cam-02 (viewport differences).",
+    "role": "canary"
+  },
+  {
+    "id": "freetype-01",
+    "skill": "libgdx-freetype",
+    "prompt": "I added gdx-freetype to my libGDX core module but I'm getting UnsatisfiedLinkError at runtime on desktop. My Gradle has: implementation 'com.badlogicgames.gdx:gdx-freetype:$gdxVersion' in the desktop module. What's wrong?",
+    "must_contain": [
+      "gdx-freetype-platform"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must identify that the desktop module needs the PLATFORM artifact 'gdx-freetype-platform' with the natives-desktop classifier, NOT just 'gdx-freetype'. The core module uses 'gdx-freetype' but each platform module needs 'gdx-freetype-platform' with appropriate natives classifier.",
+    "reason": "Haiku passes baseline (3/3). Kept as canary — tests platform artifact naming distinct from freetype-04 (font reload on Android).",
+    "role": "canary"
+  },
+  {
+    "id": "3d-01",
+    "skill": "libgdx-graphics-3d",
+    "prompt": "I added a SpotLight to my libGDX 3D scene's Environment but it has no visible effect. The scene renders fine with DirectionalLight and PointLight. What am I doing wrong?",
+    "must_contain": [
+      "numSpotLights"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must explain that DefaultShader.Config.numSpotLights defaults to 0, which means spot lights are completely disabled in the default shader. Must recommend creating a DefaultShader.Config, setting numSpotLights to a value greater than 0, and passing it to ModelBatch via DefaultShaderProvider.",
+    "reason": "Haiku passes baseline (3/3). Kept as canary — tests numSpotLights default distinct from 3d-03 (orbit camera).",
+    "role": "canary"
+  },
+  {
+    "id": "input-01",
+    "skill": "libgdx-input-handling",
+    "prompt": "In my libGDX InputProcessor, I want to detect when the user presses the 'A' key to trigger a jump. Should I use keyDown or keyTyped? And what parameter do I compare against — Input.Keys.A in both cases?",
+    "must_contain": [
+      "keyDown"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must recommend keyDown(int keycode) for game controls like jumping, NOT keyTyped(char character). Must warn that comparing keyTyped's char parameter against Input.Keys.A is WRONG — keyTyped receives a Unicode character while Input.Keys.A is an integer keycode constant (29), and comparing them is silently incorrect. keyDown receives Input.Keys constants and is appropriate for action triggers.",
+    "reason": "Haiku passes baseline (3/3). Kept as canary — tests keyDown/keyTyped trap distinct from input-03 (swipe gestures).",
+    "role": "canary"
+  },
+  {
+    "id": "particles-01",
+    "skill": "libgdx-particles",
+    "prompt": "I'm calling scaleEffect(2f) on my libGDX ParticleEffect every time the player picks up a power-up, but the particles keep getting exponentially bigger. After 3 power-ups the effect is enormous. Why?",
+    "must_contain": [
+      "multiplicative"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must explain that scaleEffect() is MULTIPLICATIVE — each call multiplies onto the existing tracked scale, not setting an absolute scale. Calling scaleEffect(2f) three times results in 8x scale (2*2*2), not 2x. Must recommend either calling scaleEffect() only once, using reset(true), or tracking cumulative scale.",
+    "reason": "Haiku passes baseline (3/3). Kept as canary — tests multiplicative scaleEffect trap distinct from part-01 (basic load/draw).",
+    "role": "canary"
+  },
+  {
+    "id": "scene2d-01",
+    "skill": "libgdx-scene2d-ui",
+    "prompt": "I'm using Table layout in libGDX Scene2D and I called expand() on my button's cell, but the button is still tiny in the center of the screen. I expected it to fill the available space. What am I missing?",
+    "must_contain": [
+      "fill"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must clearly distinguish between expand() and fill(): expand() makes the CELL claim extra space (grow the cell), while fill() makes the WIDGET stretch to fill the cell. Using expand() alone results in a large cell with a small widget centered inside. Must recommend adding fill() or using grow() which is shorthand for expand().fill().",
+    "reason": "Haiku passes baseline (3/3). Kept as canary — tests expand/fill distinction distinct from scene2d-03 (ChangeListener).",
+    "role": "canary"
+  },
+  {
+    "id": "shaders-01",
+    "skill": "libgdx-shaders",
+    "prompt": "I'm writing a libGDX shader that uses two textures — a diffuse map and a normal map. I bind the normal map to texture unit 1, set the uniform, then draw with SpriteBatch. But my diffuse texture appears as the normal map. What's happening?",
+    "must_contain": [
+      "GL_TEXTURE0"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must explain that after binding a texture to unit 1 (via normalMap.bind(1)), the active texture unit remains at GL_TEXTURE1. When SpriteBatch flushes, it binds the diffuse texture to whatever unit is active — which is unit 1, overwriting the normal map. Must recommend calling Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0) after binding to unit 1.",
+    "reason": "Haiku passes baseline (3/3). Kept as canary — tests active texture unit reset distinct from shader-02 (missing uniform).",
+    "role": "canary"
+  },
+  {
+    "id": "tiled-01",
+    "skill": "libgdx-tiled",
+    "prompt": "I placed some tile objects in an object layer in Tiled and loaded the map in libGDX, but only my regular tile layers render — the objects from the object layer don't show up at all. I'm calling renderer.render() which should render all layers. What's wrong?",
+    "must_contain": [
+      "renderObject"
+    ],
+    "must_not_contain": [],
+    "criteria": "Must explain that BatchTiledMapRenderer.renderObject() is intentionally a NO-OP (empty method). Object layers are NOT rendered visually by the map renderer — they exist as data only (for collision, spawn points, triggers). Must recommend either moving tiles to a tile layer or manually iterating MapObjects and drawing them.",
+    "reason": "Haiku passes baseline (3/3). Kept as canary — tests renderObject no-op distinct from tiled-02 (tile at pixel).",
+    "role": "canary"
+  }
+]

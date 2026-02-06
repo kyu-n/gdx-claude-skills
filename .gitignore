@@ -1,0 +1,8 @@
+# IDE
+.idea/
+
+# Transient test artifacts
+results/
+.tmp/
+report.md
+*.tmp
