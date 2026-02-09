@@ -2,7 +2,9 @@
 
 28 [Claude Code skills](https://docs.anthropic.com/en/docs/claude-code/skills) that correct documented blind spots in Claude's knowledge of libGDX and related game development libraries. Each skill is a concise reference document targeting specific API traps, surprising behaviors, and poorly documented features that the base model gets wrong.
 
-Designed for **libGDX 1.14.1**. Validated against **Claude Sonnet** with a 59-test automated harness — 100% pass rate with skills, zero regressions.
+Designed for **libGDX 1.14.1** (HEAD). Validated against **Claude Sonnet 4.5** with a 59-test automated harness — 100% pass rate with skills, zero regressions.
+
+> **Version notice:** These skills are verified against libGDX 1.14.1 (current HEAD) and Claude model versions Opus 4.6, Sonnet 4.5, and Haiku 4.5. Future libGDX releases may change APIs, defaults, or behavior that these skills document. Future model versions may fix (or introduce) blind spots that shift which skills provide value. If you're using a different libGDX version or a newer Claude model, verify claims against source before relying on them.
 
 ## Installation
 
@@ -118,69 +120,3 @@ Validated with an automated test harness (59 tests, 3 runs per arm, Opus adjudic
 | Skill | Covers |
 |---|---|
 | `universal-tween-engine` | Tween.to/from/set, Timeline, TweenAccessor, setCombinedAttributesLimit, setWaypointsLimit, duration is unitless, repeatYoyo signature |
-
-## Test Harness
-
-The repository includes an automated test harness (`run_tests.sh`) for validating skill effectiveness.
-
-**59 test prompts** (`test_prompts.json`) cover all 28 skills with machine-gradeable criteria. Each test has keyword anchors (`must_contain`), anti-pattern traps (`must_not_contain`), and a natural-language grading rubric (`criteria`).
-
-The harness runs each prompt multiple times with and without skills, grades each run independently, then adjudicates with Opus to filter sampling noise:
-
-```
-Per test, per arm (baseline + skills):
-
-  3x independent runs (Sonnet/Haiku)
-       |
-  3x independent grades (Sonnet)
-       |
-  1x adjudication (Opus)
-       |
-  Final verdict + confidence + classification
-```
-
-### Usage
-
-```bash
-# Full run — both arms, 3 runs each
-./run_tests.sh
-
-# Skills arm only
-./run_tests.sh --skills-only
-
-# Specific tests
-./run_tests.sh --ids lwjgl3-01,android-02
-
-# Adjust parallelism and runs
-./run_tests.sh --jobs 8 --runs 5
-```
-
-For full usage details, cost estimates, and output format, run `./run_tests.sh --help`.
-
-### Test Roles
-
-Each test prompt is tagged with a role:
-
-| Role | Count | Purpose |
-|---|---|---|
-| **canary** | 44 | Regression guards — both arms should pass |
-| **discriminating** | 13 | Baseline fails, skill fixes — proves the skill provides value |
-| **anomaly** | 1 | Monitors for unexpected skill-induced regressions |
-| **skill-resistant** | 1 | Both arms may fail — tracks hard problems |
-
-## Project Structure
-
-```
-gdx-claude-skills/
-  skills/                   # 28 skill directories
-    libgdx-box2d/
-      SKILL.md              # Concise reference document (<300 lines)
-    universal-tween-engine/
-      SKILL.md
-      references/
-        api.md              # Supplementary API reference
-    ...
-  test_prompts.json         # 59 test cases with criteria
-  run_tests.sh              # Automated test harness
-  SUMMARY.md                # Detailed results and methodology
-```
