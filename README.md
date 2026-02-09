@@ -34,7 +34,7 @@ Each skill was written by:
 
 ## What These Skills Fix
 
-Without skills, Claude gets specific libGDX details wrong — deprecated APIs presented as current, invented methods that don't exist, and subtle behavioral traps. The code compiles but behaves incorrectly or crashes at runtime.
+Below are some examples of when Claude gets specific libGDX details wrong. For some categories, code compiles but behaves incorrectly or crashes at runtime.
 
 | Category | What Claude says | What's actually true |
 |---|---|---|
