@@ -37,14 +37,7 @@ Claude Code automatically loads matching skills based on their `description` fie
 
 Claude's training data covers libGDX, but the model consistently gets specific details wrong — deprecated methods presented as current, constructor signatures with wrong argument order, invented APIs that don't exist, and subtle behavioral details (like `coneDegrees` being a half-angle, not full arc). These aren't gaps in general understanding; they're precise factual errors that produce code that compiles but behaves incorrectly.
 
-Each skill was written by:
-
-1. Running a baseline without the skill to identify specific, reproducible errors
-2. Reading library source code to determine correct behavior
-3. Writing a correction targeting exactly those gaps
-4. Validating with the test harness to confirm fixes with zero regressions
-
-Below are some examples of when Claude gets specific libGDX details wrong. For some categories, code compiles but behaves incorrectly or crashes at runtime.
+For example:
 
 | Category | What Claude says | What's actually true |
 |---|---|---|
