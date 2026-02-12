@@ -1,6 +1,9 @@
 {
   "name": "gdx-claude-skills",
   "description": "Claude Code skills for libGDX game development",
+  "owner": {
+    "name": "kyu-n"
+  },
   "plugins": [
     {
       "name": "gdx-claude-skills",

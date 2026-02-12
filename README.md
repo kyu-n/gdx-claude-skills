@@ -8,6 +8,18 @@ Designed for **libGDX 1.14.1** (HEAD). Validated against **Claude Sonnet 4.5** w
 
 ## Installation
 
+### Via Plugin (recommended)
+
+```bash
+# Add the marketplace (one-time)
+/plugin marketplace add kyu-n/gdx-claude-skills
+
+# Install the plugin
+/plugin install gdx-claude-skills
+```
+
+### Manual
+
 Copy the skills you need into your project's `.claude/skills/` directory or your user-level `~/.claude/skills/` directory:
 
 ```bash
