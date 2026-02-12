@@ -10,7 +10,7 @@
 |---|---|
 | `skills/` | 28 reference skills (27 libGDX + 1 Universal Tween Engine), each a `SKILL.md` correcting specific model blind spots |
 | `test_prompts.json` | 59 test prompts with machine-gradeable criteria, keyword anchors, and anti-pattern traps |
-| `run_tests.sh` | Test harness: runs each prompt N times with/without skills, grades with Sonnet, adjudicates with Opus |
+| `run_tests.sh` | Test harness: runs each prompt N times with/without skills, grades with the test model, adjudicates with Opus |
 | `README.md` | Harness usage, cost estimates, output format |
 
 ### Test Roles

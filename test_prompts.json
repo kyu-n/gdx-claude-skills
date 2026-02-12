@@ -45,7 +45,7 @@
       "useImmersiveMode"
     ],
     "must_not_contain": [],
-    "criteria": "Must tell user that config.useImmersiveMode = true is sufficient and they should NOT write manual SYSTEM_UI_FLAG code. Mentioning SYSTEM_UI_FLAG when warning against it is acceptable. Must NOT provide a working SYSTEM_UI_FLAG code example for the user to copy.",
+    "criteria": "Must tell user that config.useImmersiveMode = true is sufficient and they should NOT write manual SYSTEM_UI_FLAG code. Mentioning SYSTEM_UI_FLAG when warning against it is acceptable. Showing SYSTEM_UI_FLAG code explicitly labeled as an anti-pattern or 'do not use' example is acceptable. Must NOT present SYSTEM_UI_FLAG code as the recommended solution.",
     "reason": "Regression canary for Android backend. Tests useImmersiveMode configuration. MC-anchored. Selected over android-02/03/04 because immersive mode is Android-specific knowledge unlikely to be in general training data.",
     "role": "canary"
   },
@@ -57,7 +57,7 @@
       "unload"
     ],
     "must_not_contain": [],
-    "criteria": "Must recommend manager.unload(path) for releasing individual assets (reference-counted). Must NOT recommend calling .dispose() directly on textures/fonts retrieved from AssetManager \u2014 this causes double-free crashes. manager.dispose() clears everything. Mentioning .dispose() only in the context of warning AGAINST it or for manager.dispose() is acceptable.",
+    "criteria": "Must recommend manager.unload(path) for releasing individual assets (reference-counted). Must NOT recommend calling .dispose() directly on textures/fonts retrieved from AssetManager \u2014 this causes double-free crashes. manager.dispose() clears everything. IMPORTANT: Mentioning .dispose() in anti-pattern examples (labeled as wrong/dangerous) or for manager.dispose() is acceptable and should NOT cause a failure.",
     "reason": "Regression canary for AssetManager. Tests disposal semantics \u2014 manager.unload() vs direct .dispose(). MC-anchored on unload. Selected because disposal misuse is the most common AssetManager bug.",
     "role": "canary"
   },
@@ -78,11 +78,9 @@
     "must_contain": [
       "world.step"
     ],
-    "must_not_contain": [
-      "getDeltaTime()"
-    ],
-    "criteria": "Must use a fixed timestep like 1/60f, NOT Gdx.graphics.getDeltaTime() directly as the step size. Variable timestep causes tunneling and non-deterministic behavior. Should show world.step(timeStep, velocityIterations, positionIterations) with all three parameters. Mentioning getDeltaTime() in the context of an accumulator pattern is acceptable, but it must NOT be passed directly as the first argument to world.step().",
-    "reason": "Baseline passes getDeltaTime() directly to world.step() (0/3 pass). Skill corrects to fixed timestep accumulator pattern. MC+MNC anchored \u2014 traps passing getDeltaTime() directly to world.step().",
+    "must_not_contain": [],
+    "criteria": "Must use a fixed timestep like 1/60f, NOT Gdx.graphics.getDeltaTime() directly as the step size. Variable timestep causes tunneling and non-deterministic behavior. Should show world.step(timeStep, velocityIterations, positionIterations) with all three parameters. getDeltaTime() in the context of an accumulator pattern is acceptable, but it must NOT be passed directly as the first argument to world.step().",
+    "reason": "Baseline passes getDeltaTime() directly to world.step(). Skill corrects to fixed timestep accumulator pattern. MNC removed \u2014 accumulator pattern legitimately uses getDeltaTime(); criteria prose catches direct-pass misuse.",
     "role": "discriminating"
   },
   {
@@ -152,7 +150,7 @@
       "end"
     ],
     "must_not_contain": [],
-    "criteria": "Must call fbo.begin() before drawing and fbo.end() after. Must clear the FBO after begin() \u2014 content persists from previous frame. The FBO texture is vertically flipped \u2014 must flip it when drawing (via TextureRegion.flip or v-coordinate swap). Must end any active SpriteBatch before fbo.begin()/end().",
+    "criteria": "Must call fbo.begin() before drawing and fbo.end() after. Must clear the FBO after begin() \u2014 content persists from previous frame. The FBO texture is vertically flipped \u2014 must flip it when drawing (via TextureRegion.flip or v-coordinate swap). If a SpriteBatch is active, it must be ended before fbo.begin()/end(). If no batch is active when fbo operations occur, this requirement is automatically satisfied.",
     "reason": "Regression canary for framebuffers. Tests FrameBuffer begin()/end() pattern. MC-anchored. Selected over fbo-03 as the fundamental FBO usage pattern.",
     "role": "canary"
   },
@@ -230,12 +228,9 @@
     "skill": "libgdx-headless-backend",
     "prompt": "Can I use BitmapFont and Skin in a libGDX headless server for text processing?",
     "must_contain": [],
-    "must_not_contain": [
-      "new BitmapFont(",
-      "new Skin("
-    ],
-    "criteria": "Must clearly state that BitmapFont and Skin require OpenGL and will crash in headless mode because Gdx.gl is null. Must NOT present working BitmapFont or Skin construction code as though it will work in headless. Should suggest alternatives like Json for data processing.",
-    "reason": "Inverted result: baseline passes (3/3) but skills arm has noise (2/3). Skills may introduce confusing context about BitmapFont/Skin in headless mode. Monitors for skill-induced regressions where extra context hurts.",
+    "must_not_contain": [],
+    "criteria": "Must clearly state that BitmapFont and Skin require OpenGL and will crash in headless mode because Gdx.gl is null. Must NOT present working BitmapFont or Skin construction code as though it will work in headless. Showing constructor calls in crash/error/warning context (e.g., 'this will throw') is acceptable. Should suggest alternatives like Json for data processing.",
+    "reason": "Monitors for skill-induced regressions where extra context hurts. MNC removed \u2014 model legitimately shows constructors in crash-example context.",
     "role": "anomaly"
   },
   {
@@ -412,11 +407,10 @@
       "postRunnable"
     ],
     "must_not_contain": [
-      "getResultAsBytes",
       "HttpURLConnection"
     ],
-    "criteria": "Must use Gdx.net.sendHttpRequest() with an async HttpResponseListener. The response callback is NOT on the GL thread \u2014 must use Gdx.app.postRunnable() to touch UI/GL state. The byte[] method is getResult(), NOT getResultAsBytes(). Must NOT use java.net.HttpURLConnection directly.",
-    "reason": "Regression canary for networking. Tests Gdx.net.sendHttpRequest() with postRunnable for thread safety. MC+MNC anchored \u2014 traps getResultAsBytes (hallucinated) and HttpURLConnection (wrong library). Dual trap.",
+    "criteria": "Must use Gdx.net.sendHttpRequest() with an async HttpResponseListener. The response callback is NOT on the GL thread \u2014 must use Gdx.app.postRunnable() to touch UI/GL state. The byte[] method is getResult(), NOT getResultAsBytes(). Must NOT use java.net.HttpURLConnection directly. Mentioning getResultAsBytes only when warning AGAINST it is acceptable.",
+    "reason": "Regression canary for networking. Tests Gdx.net.sendHttpRequest() with postRunnable for thread safety. MC+MNC anchored \u2014 traps HttpURLConnection (wrong library). getResultAsBytes removed from MNC \u2014 model legitimately warns against it.",
     "role": "canary"
   },
   {
@@ -464,7 +458,7 @@
       "ScreenUtils.clear"
     ],
     "must_not_contain": [],
-    "criteria": "Must recommend ScreenUtils.clear() (since 1.10.0), not the old Gdx.gl.glClearColor()+glClear() pattern.",
+    "criteria": "Must recommend ScreenUtils.clear() (since 1.10.0) as the primary approach. Must NOT present the old Gdx.gl.glClearColor()+glClear() pattern as an equally valid alternative. Showing the legacy pattern explicitly labeled as deprecated or 'do not use' is acceptable.",
     "reason": "Baseline hedges by presenting legacy glClearColor()+glClear() alongside ScreenUtils.clear() (0/3 pass). Skill anchors on the modern API. Tests whether model recommends deprecated patterns as valid alternatives.",
     "role": "discriminating"
   },
