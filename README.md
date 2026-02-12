@@ -1,6 +1,6 @@
 # libGDX Claude Code Skills
 
-28 [Claude Code skills](https://docs.anthropic.com/en/docs/claude-code/skills) that correct documented blind spots in Claude's knowledge of libGDX and related game development libraries. Each skill is a concise reference document targeting specific API traps, surprising behaviors, and poorly documented features that the base model gets wrong.
+28 [Claude Code skills](https://docs.anthropic.com/en/docs/claude-code/skills) that correct documented blind spots in Claude's knowledge of [libGDX](https://libgdx.com/) and related game development libraries. Each skill is a concise reference document targeting specific API traps, surprising behaviors, and poorly documented features that the base model gets wrong.
 
 Designed for **libGDX 1.14.1** (HEAD). Validated against **Claude Sonnet 4.5** with a 59-test automated harness — 100% pass rate with skills, zero regressions.
 
@@ -44,8 +44,6 @@ Each skill was written by:
 3. Writing a correction targeting exactly those gaps
 4. Validating with the test harness to confirm fixes with zero regressions
 
-## What These Skills Fix
-
 Below are some examples of when Claude gets specific libGDX details wrong. For some categories, code compiles but behaves incorrectly or crashes at runtime.
 
 | Category | What Claude says | What's actually true |
@@ -61,7 +59,7 @@ Below are some examples of when Claude gets specific libGDX details wrong. For s
 | Subtle bounds | `MathUtils.random()` treats int and float the same | `random(int,int)` inclusive upper; `random(float,float)` exclusive upper |
 | Wrong class | `MessageDispatcher.getInstance()` (gdx-ai) | `MessageManager.getInstance()` — MessageDispatcher has no `getInstance()` |
 
-Validated with an automated test harness (59 tests, 3 runs per arm, Opus adjudicator). See `SUMMARY.md` for methodology and full results.
+See `SUMMARY.md` for methodology and full results.
 
 ## Skills
 
