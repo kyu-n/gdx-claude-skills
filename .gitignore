@@ -1,8 +1,13 @@
 # IDE
 .idea/
 
+# Claude planning artifacts
+docs/
+report-*.md
+
 # Transient test artifacts
 results/
+results-*/
 .tmp/
 report.md
 *.tmp

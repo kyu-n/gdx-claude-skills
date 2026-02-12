@@ -1,0 +1,9 @@
+{
+  "name": "gdx-claude-skills",
+  "version": "1.0.0",
+  "description": "28 Claude Code skills that correct blind spots in Claude's knowledge of libGDX 1.14.x, gdx-ai, gdx-controllers, box2dlights, and Universal Tween Engine",
+  "homepage": "https://github.com/kyu-n/gdx-claude-skills",
+  "repository": "https://github.com/kyu-n/gdx-claude-skills",
+  "license": "CC-BY-4.0",
+  "keywords": ["libgdx", "game-development", "java", "kotlin", "box2d", "tween-engine"]
+}
