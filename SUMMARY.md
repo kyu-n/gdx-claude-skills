@@ -67,16 +67,16 @@ Zero regressions on both models. Haiku benefits ~2x more from skills than Sonnet
 ```
 Per test, per arm (baseline + skills):
 
-  3× independent runs (Sonnet/Haiku)
+  N× independent runs (test model)
        ↓
-  3× independent grades (Sonnet/Haiku)
+  N× independent grades (test model)
        ↓
   1× adjudication (Opus)
        ↓
   Final verdict + confidence + classification
 ```
 
-The multi-run + adjudication design filters out sampling noise. A single run might fluke pass or fail; 3 runs with Opus adjudication reliably identifies whether the underlying *model behavior* passes or fails.
+The multi-run + adjudication design filters out sampling noise. A single run might fluke pass or fail; multiple runs with Opus adjudication reliably identifies whether the underlying *model behavior* passes or fails.
 
 ### Grading Criteria
 
